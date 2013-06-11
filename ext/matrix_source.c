@@ -2413,6 +2413,46 @@ static VALUE FUNCTION(rb_gsl_matrix,symmetrize_bang)(VALUE obj)
   return obj;
 }
 
+static VALUE FUNCTION(rb_gsl_matrix,to_binary)(VALUE obj)
+{
+  gsl_matrix *m = NULL;
+  Data_Get_Struct(obj, gsl_matrix, m);
+  if (m->size2 == m->tda) {
+    return rb_str_new((char *)m->data, sizeof(BASE) * MULTIPLICITY * m->size1 * m->size2);
+  } else {
+    char *buf = malloc(sizeof(BASE) * MULTIPLICITY * m->size1 * m->size2);
+    size_t i;
+    for (i = 0; i < m->size1; i++) {
+      memcpy(buf + i * sizeof(BASE) * MULTIPLICITY * m->size2,
+          m->data + i * MULTIPLICITY * m->tda,
+          sizeof(BASE) * MULTIPLICITY * m->size2);
+    }
+    VALUE str = rb_str_new((char *)m->data, sizeof(BASE) * MULTIPLICITY * m->size1 * m->size2);
+    free(buf);
+    return str;
+  }
+}
+
+static VALUE FUNCTION(rb_gsl_matrix,from_binary)(VALUE obj, VALUE str)
+{
+  gsl_matrix *m = NULL;
+  Data_Get_Struct(obj, gsl_matrix, m);
+  char *str_data = RSTRING_PTR(str);
+  if (RSTRING_LEN(str) != sizeof(BASE) * MULTIPLICITY * m->size1 * m->size2)
+    rb_raise(rb_eArgError, "wrong data size");
+  if (m->size2 == m->tda) {
+    memcpy(m->data, str_data, sizeof(BASE) * MULTIPLICITY * m->size1 * m->size2);
+  } else {
+    size_t i;
+    for (i = 0; i < m->size1; i++) {
+      memcpy(m->data + i * MULTIPLICITY * m->tda,
+          str_data + i * sizeof(BASE) * MULTIPLICITY * m->size2,
+          sizeof(BASE) * MULTIPLICITY * m->size2);
+    }
+  }
+  return obj;
+}
+
 void FUNCTION(Init_gsl_matrix,init)(VALUE module)
 {
   /*  rb_define_singleton_method(GSL_TYPE(cgsl_matrix), "new", FUNCTION(rb_gsl_matrix,alloc), -1);*/
@@ -2711,6 +2751,9 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
 
   rb_define_method(GSL_TYPE(cgsl_matrix), "symmetrize", FUNCTION(rb_gsl_matrix,symmetrize), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "symmetrize!", FUNCTION(rb_gsl_matrix,symmetrize_bang), 0);
+  
+  rb_define_method(GSL_TYPE(cgsl_matrix), "to_binary", FUNCTION(rb_gsl_matrix,to_binary), 0);
+  rb_define_method(GSL_TYPE(cgsl_matrix), "from_binary", FUNCTION(rb_gsl_matrix,from_binary), 1);
 }
 
 #undef NUMCONV

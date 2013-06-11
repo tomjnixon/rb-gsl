@@ -44,5 +44,20 @@ class MatrixTest < Test::Unit::TestCase
 		assert_equal(m.ispos, 1)
 		assert_equal(m.ispos?, true)				
 	end
+	
+	def test_matrix_binary
+		def test_from_to(m, m_new)
+			assert_equal(m, m_new.from_binary(m.to_binary))
+		end
+		
+		def do_tests_for_type(type)
+			test_from_to(type.zeros(10,10), type.alloc(10, 10))
+			test_from_to(type.eye(10), type.alloc(10, 10))
+			test_from_to(type.zeros(7, 10).set(5, 3, 5), type.alloc(7, 10))
+		end
+		
+		do_tests_for_type GSL::Matrix
+		do_tests_for_type GSL::Matrix::Int
+	end
 end
 
