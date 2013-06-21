@@ -1,19 +1,18 @@
 Gem::Specification.new do |s|
   # Basics
-  s.name = 'gsl'
+  s.name = 'gsl-lsh'
   # GitHub uses the version in order to decide whenever to rebuild
   s.version = File.read('VERSION').chomp
-  s.summary = 'Ruby interface to GSL'
-  s.description = 'RubyGSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'
+  s.summary = 'Ruby interface to GSL, forked for lsh'
+  s.description = 'A fork of gsl with fast matrix serialisation, for lsh'
   s.required_ruby_version = '>= 1.8.1'
   s.requirements << 'GSL (http://www.gnu.org/software/gsl/)'
   s.add_dependency('narray', '>= 0.5.9')
 
   # About
-  s.authors = ['Yoshiki Tsunesada', 'David MacMahon']
-  s.email = 'y-tsunesada@mm.em-net.ne.jp'
-  s.homepage = 'http://rb-gsl.rubyforge.org/'
-  s.rubyforge_project = 'rb-gsl'
+  s.authors = ['Yoshiki Tsunesada', 'David MacMahon', 'Thomas Nixon']
+  s.email = 'rubygems@tomn.co.uk'
+  s.homepage = 'https://github.com/tomjnixon/rb-gsl'
 
   # Files, Libraries, and Extensions
   s.files = Dir['README.rdoc', 'VERSION', 'Rakefile', 'ext/*',
